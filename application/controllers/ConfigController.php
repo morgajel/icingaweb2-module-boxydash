@@ -1,16 +1,33 @@
 <?php
 
-use Icinga\Web\Controller\ModuleActionController;
+use Icinga\Web\Controller;
 
-class BoxyDash_ConfigController extends ModuleActionController
+class BoxyDash_ConfigController extends Controller
 {
     public function indexAction()
     {
-        $this->view->tabs = $this->Module()->getConfigTabs()->activate('config');
-        $hintHtml = $this->view->escape($this->translate(
-            'Configuration form is still missing in Boxy Dashboard.'
-          . ' in %s following this example:'
-        ));  
+        $this->getTabs()->activate('config');
+        #TODO set up configurations here.
+    }
+    public function getTabs()
+    {
+        $tabs = parent::getTabs();
+        $tabs->add(
+            'dashboard',
+            array(
+                'title' => 'Dashboard',
+                'url'   => 'boxydash'
+            )
+        );
+        $tabs->add(
+            'config',
+            array(
+                'title' => 'Configure',
+                'url'   => 'boxydash/config'
+            )
+        );
+
+        return $tabs;
     }
 }
 

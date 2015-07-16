@@ -1,30 +1,75 @@
+<?
+use Icinga\Module\Monitoring\Object\Service;
+use Icinga\Module\Monitoring\Object\Host;
+
+
+?>
+<div class="controls">
+  <?php if (! $this->compact): ?>
+    <?= $tabs; ?>
+  <?php endif ?>
+</div>
+
+
 <div class="content">
-    <h1><a href="/icinga/">Icinga Dashboard</a></h1>
-    <div style="float:right; border:1px solid gray; margin:5px;padding:5px;">
-        <h2>legend</h2>
-        <div class="box legend ok" >ok</div>
-        <div class="box legend warning" >warning</div>
-        <div class="box legend critical" >critical</div>
-        <div class="box legend unknown" >unknown</div>
-        <br>
-        <div class="box legend ok-ack" >Acknowledged:</div>
-        <div class="box legend warning-ack" >warning</div>
-        <div class="box legend critical-ack" >critical</div>
-        <div class="box legend unknown-ack" >unknown</div>
-        <br>
-        <div class="box legendtext">H = Host Acknowledged</div>    
-        <div class="box legendtext">&#8730;= Service Acknowledged</div>
+
+
+    <h1>Boxy Dashboard</h1>
+    <div style="float:right">
+        <div class="legend unknown-ack" >unknown</div>
+        <div class="legend critical-ack" >critical</div>
+        <div class="legend warning-ack" >warning</div>
+        <div class="legendtext" >Acknowledged:</div>
+
+        <div class="legend unknown" >unknown</div>
+        <div class="legend critical" >critical</div>
+        <div class="legend warning" >warning</div>
+        <div class="legend ok" >ok</div>
+        <div class="legendtext">Legend:</div>
+
+        <div class="legendtext">&#8632; = Host Down and Acknowledged</div>    
+        <div class="legendtext">&#10004; = Acknowledged</div>
+        <div class="legendtext">&#8986; = In Downtime</div>
     </div>
+<h2>Host Info</h2>
+<? 
+foreach ($this->hosts as $host){ 
+    $title = htmlspecialchars($host->{'host_display_name'});
+    $size=16;
+    $content="&nbsp;";
+    $returncode=$host->{'host_state_text'};
+    if ($host->{'host_acknowledged'}==1 ){
+        $returncode.="-ack";
+        $content= "&#10004;";
+        $title.=" (Acknowledged)";
+    }?>
+    <a href='/monitoring/host/show?host=<?=$host->{'host_name'}?>' class='box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
+<? } ?>
 
-    <h1><a href="/icinga/">Icinga Dashboard</a></h1>
+<br clear="all"/>
+<h2>Service Info</h2>
 
+<? foreach ($this->services as $service){ 
+    $title = $service->{'host_name'}.": ".$service->{'service_description'};
+    $size=16;
+    $content="&nbsp;";
+    $returncode=$service->{'service_state_text'};
+    if ($service->{'service_in_downtime'}==1 or $service->{'host_in_downtime'}==1 ){
+        $returncode.="-downtime";
+        $content= "&#8986;";
+        $title.=" (Scheduled Maintenance)";
+    }elseif ($service->{'service_acknowledged'}==1 ){
+        $returncode.="-ack";
+        $content= "&#10004;";
+        $title.=" (Acknowledged)";
+    }elseif ($service->{'service_state_text'} != "OK"  && $service->{'host_acknowledged'} == 1 ){
+        $returncode.="-ack";
+        $content= "&#8632;";
+        $title.=" (Host Down and Acknowledged)";
+    }
+    $title=htmlspecialchars($title."\n ".$service->{'service_output'});?>
+    <a href='/monitoring/host/show?host=<?=$host->{'host_name'}?>&service=<?=$service->{'service_description'}?>' class='box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
 
-<br clear='all'/><h2>Service Info</h2>
-
-
-    <h1>Boxy Dashboard!</h1>
-
-<?= $this->url ?>
-
+<? } ?>
 
 </div>
