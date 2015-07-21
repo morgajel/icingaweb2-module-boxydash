@@ -15,21 +15,25 @@ use Icinga\Module\Monitoring\Object\Host;
 
 
     <h1>Boxy Dashboard</h1>
-    <div style="float:right">
-        <div class="legend unknown-ack" >unknown</div>
-        <div class="legend critical-ack" >critical</div>
-        <div class="legend warning-ack" >warning</div>
-        <div class="legendtext" >Acknowledged:</div>
-
-        <div class="legend unknown" >unknown</div>
-        <div class="legend critical" >critical</div>
-        <div class="legend warning" >warning</div>
-        <div class="legend ok" >ok</div>
-        <div class="legendtext">Legend:</div>
-
-        <div class="legendtext">&#8632; = Host Down and Acknowledged</div>    
-        <div class="legendtext">&#10004; = Acknowledged</div>
-        <div class="legendtext">&#8986; = In Downtime</div>
+    <div class="boxy_legend">
+        <span class="boxy_sublegend">
+            <span class="legendtext">&#10004; = Acknowledged</span>
+            <span class="legendtext">&#8986; = In Downtime</span>
+            <span class="legendtext">&#8632; = Host Down and Acknowledged</span>    
+        </span>
+        <span class="boxy_sublegend">
+            <span class="legendtext">Status:</span>
+            <span class="boxy_legend_box ok" >ok</span>
+            <span class="boxy_legend_box warning" >warning</span>
+            <span class="boxy_legend_box critical" >critical</span>
+            <span class="boxy_legend_box unknown" >unknown</span>
+        </span>
+        <span class="boxy_sublegend">
+            <span class="legendtext" >Acknowledged:</span>
+            <span class="boxy_legend_box warning-ack" >warning</span>
+            <span class="boxy_legend_box critical-ack" >critical</span>
+            <span class="boxy_legend_box unknown-ack" >unknown</span>
+        </span>
     </div>
 <h2>Host Info</h2>
 <? 
@@ -43,7 +47,7 @@ foreach ($this->hosts as $host){
         $content= "&#10004;";
         $title.=" (Acknowledged)";
     }?>
-    <a href='/monitoring/host/show?host=<?=$host->{'host_name'}?>' class='box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
+    <a href='/monitoring/host/show?host=<?=$host->{'host_name'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
 <? } ?>
 
 <br clear="all"/>
@@ -68,7 +72,7 @@ foreach ($this->hosts as $host){
         $title.=" (Host Down and Acknowledged)";
     }
     $title=htmlspecialchars($title."\n ".$service->{'service_output'});?>
-    <a href='/monitoring/service/show?host=<?=$service->{'host_name'}?>&service=<?=$service->{'service_description'}?>' class='box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
+    <a href='/monitoring/service/show?host=<?=$service->{'host_name'}?>&service=<?=$service->{'service_description'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
 
 <? } ?>
 
