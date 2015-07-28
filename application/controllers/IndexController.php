@@ -23,7 +23,22 @@ class BoxyDash_IndexController extends Controller
     public function indexAction()
     {
         $this->getTabs()->activate('dashboard');
+        $config = $this->Config('config'); #? does this work?
+
         $this->setAutorefreshInterval(10);
+
+        if (is_numeric($this->_getParam("boxsize"))){
+            $this->view->boxsize = $this->_getParam("boxsize");
+
+        }elseif (is_numeric( $config->get('settings','setting_boxsize','missing'))) {
+            $this->view->boxsize = $config->get('settings','setting_boxsize','missing');
+        }else{
+            $this->view->boxsize = 5;
+        }
+        $this->_request->getParams();
+        $this->view->debug = "";
+
+
         $this->getServiceData();
         $this->getHostData();
     }
@@ -85,6 +100,7 @@ class BoxyDash_IndexController extends Controller
 
         );
         $query = $this->backend->select()->from('hostStatus', $columns);
+        $query->order('host_name', 'desc');
 
         # This might be very very bad for very very large environments. I just don't know how well it'll perform.
         $this->view->hosts = $query->getQuery()->fetchAll();
@@ -123,7 +139,7 @@ class BoxyDash_IndexController extends Controller
             'max_check_attempts'    => 'service_max_check_attempts'
         );
         $query = $this->backend->select()->from('serviceStatus', $columns);
-
+        $query->order('host_name', 'desc');
 
         $this->view->services = $query->getQuery()->fetchAll();
 
