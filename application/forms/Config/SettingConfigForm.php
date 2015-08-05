@@ -51,6 +51,16 @@ class SettingConfigForm extends ConfigForm
                     )
             )
         );
+        $this->addElement(
+            'checkbox',
+            'include_soft_status',
+            array(
+                'required'      => true,
+                'label'         => $this->translate('Include Soft Status'),
+                'description'   => $this->translate('Enable this to have soft status included')
+            )
+        );
+
     }
 
     public function onSuccess()

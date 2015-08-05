@@ -23,15 +23,15 @@ class BoxyDash_IndexController extends Controller
     public function indexAction()
     {
         $this->getTabs()->activate('dashboard');
-        $config = $this->Config('config'); #? does this work?
+        $this->config = $this->Config('config'); #? does this work?
 
         $this->setAutorefreshInterval(10);
 
         if (is_numeric($this->_getParam("boxsize"))){
             $this->view->boxsize = $this->_getParam("boxsize");
 
-        }elseif (is_numeric( $config->get('settings','setting_boxsize','missing'))) {
-            $this->view->boxsize = $config->get('settings','setting_boxsize','missing');
+        }elseif (is_numeric( $this->config->get('settings','setting_boxsize','missing'))) {
+            $this->view->boxsize = $this->config->get('settings','setting_boxsize','missing');
         }else{
             $this->view->boxsize = 5;
         }
@@ -108,7 +108,12 @@ class BoxyDash_IndexController extends Controller
         foreach ($this->view->hosts as $host) {
             #FIXME: using Service function for a host state. that's kinda ugly.
             #Loop through and make sure there's a field that says "OK" so we can grab the right css class
-            $host->{'host_state_text'}=Service::getStateText($host->{'host_state'});
+            if ($host->{'host_hard_state'} ||  $this->config->get('settings','include_soft_status',false)){
+                $host->{'host_state_text'}=Service::getStateText($host->{'host_state'});
+            }else{
+                $host->{'host_state_text'}=Service::getStateText(0);
+            }
+#            $host->{'host_name'}.= "(state: ".$host->{'host_hard_state'}.", status:".$this->config->get('settings','include_soft_status',false).")";
         }
 
     }
@@ -121,6 +126,8 @@ class BoxyDash_IndexController extends Controller
             'host_in_downtime',
             'host_acknowledged',
             'host_state',
+            'host_hard_state',
+            'service_hard_state',
             'service_description',
             'service_display_name',
             'service_state',
@@ -147,6 +154,16 @@ class BoxyDash_IndexController extends Controller
             #Loop through and make sure there's a field that says "OK" so we can grab the right css class
             $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
             $service->{'host_state_text'}=Service::getStateText($service->{'host_state'});
+
+#            $service->{'service_description'}.= "(state: ".$service->{'service_hard_state'}.", status:".$this->config->get('settings','include_soft_status',false).")";
+
+            if ( $service->{'service_hard_state'} || $service->{'service_state'} == 3 ||  $this->config->get('settings','include_soft_status',false)){
+                $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
+            }else{
+                $service->{'service_state_text'}=Service::getStateText(0);
+            }
+
+
         }
     }
 
