@@ -56,8 +56,19 @@ class SettingConfigForm extends ConfigForm
             'include_soft_status',
             array(
                 'required'      => true,
+                'value'         => true,
                 'label'         => $this->translate('Include Soft Status'),
                 'description'   => $this->translate('Enable this to have soft status included')
+            )
+        );
+        $this->addElement(
+            'checkbox',
+            'requires_authentication',
+            array(
+                'required'      => true,
+                'value'         => true,
+                'label'         => $this->translate('Require Authentication?'),
+                'description'   => $this->translate('Does Boxydash require Authentication? Warning, this may expose sensitive network information.')
             )
         );
 

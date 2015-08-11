@@ -1,35 +1,42 @@
 .boxy_legend {
-    border: 0px solid black;
+/* Used */
+    border: 0px solid blue;
     float:right;
-    height:30px;
     font-size:12px;
     margin:2px 2px 0px 0px;
-    text-align:center;
-    vertical-align:middle;
+    text-align:right;
     display:block;
     text-decoration:none;
+    vertical-align:middle;
 }
 .boxy_sublegend {
-    border: 0px solid black;
+/* Used */
+    border: 0px solid green;
     margin-left:20px;
+    display:inline-block;
+    vertical-align:middle;
     
+}
+.legendtext {
+/* Used */
+    width:140px;
+    height:20px;
+    font-size:12px;
+    margin:2px 2px 0px 0px;
+    display:inline;
+    text-decoration:none;
 }
 
 .boxy_legend_box {
+/* Used */
     padding:4px 4px 4px 4px;
+    border: 0px solid red;
+    
     text-align:center;
-    display:inline;
-    vertical-align:middle;
+    display:inline-block;
     text-decoration:none;
 }
 
-.legendkey {
-    margin:2px 2px 0px 0px;
-    text-align:center;
-    display:block;
-    vertical-align:middle;
-    text-decoration:none;
-}
 
 .boxy_box {
     margin:2px 2px 0px 0px;
@@ -39,24 +46,18 @@
     vertical-align:middle;
     text-decoration:none;
 }
-.legendtext {
-    width:140px;
-    height:20px;
-    font-size:12px;
-    margin:2px 2px 0px 0px;
-    display:inline;
-    text-decoration:none;
-}
-.ok {background-color:@colorOk}
-.ok-ack {background-color:@colorOk}
-.warning {background-color:@colorWarning;}
-.warning-ack {background-color:@colorWarningHandled;}
+
+/* Note: @colors won't work when the board is viewed anonymously */
+.ok {background-color:#44BB77;}
+.ok-ack {background-color:#44BB77;}
+.warning {background-color:#FFAA44;}
+.warning-ack {background-color:#FFCC66;}
 .warning-downtime {background-color:#dddddd;}
-.critical {background-color:@colorCritical;}
-.critical-ack {background-color:@colorCriticalHandled;}
+.critical {background-color:#FF5566}
+.critical-ack {background-color:#FF99AA}
 .critical-downtime {background-color:#dddddd;}
-.unknown {background-color:@colorUnknown;}
-.unknown-ack {background-color:@colorUnknownHandled;}
+.unknown {background-color:#AA44FF}
+.unknown-ack {background-color:#CC77FF;}
 .unknown-downtime {background-color:#dddddd;}
 
 

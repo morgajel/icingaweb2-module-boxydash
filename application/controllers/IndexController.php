@@ -20,6 +20,10 @@ use Icinga\Web\Url;
 #FIXME should this be Controller or ModuleActionController? The documentation was unclear.
 class BoxyDash_IndexController extends Controller
 {
+    protected $requiresAuthentication=false;
+    protected $default_ignore_softstate = false;
+    protected $default_box_size = 20;
+
     public function indexAction()
     {
         $this->getTabs()->activate('dashboard');
@@ -27,20 +31,63 @@ class BoxyDash_IndexController extends Controller
 
         $this->setAutorefreshInterval(10);
 
-        if (is_numeric($this->_getParam("boxsize"))){
-            $this->view->boxsize = $this->_getParam("boxsize");
+        $this->determine_box_size();
+        $this->determine_ignore_softstate();
+        $this->determine_requires_authentication();
 
-        }elseif (is_numeric( $this->config->get('settings','setting_boxsize','missing'))) {
-            $this->view->boxsize = $this->config->get('settings','setting_boxsize','missing');
-        }else{
-            $this->view->boxsize = 5;
-        }
         $this->_request->getParams();
-        $this->view->debug = "";
 
 
         $this->getServiceData();
         $this->getHostData();
+    }
+
+    public function determine_box_size()
+    {
+        if (is_numeric($this->_getParam("boxsize"))){
+            $this->view->boxsize = $this->_getParam("boxsize");
+
+        #Failing that, check to see if it's already in the configuration
+        }elseif (is_numeric( $this->config->get('settings','setting_boxsize','missing'))) {
+            # Note that $default_box_size should never be hit on this line.
+            $this->view->boxsize = $this->config->get('settings','setting_boxsize',$this->default_box_size);
+        }else{
+        #failing THAT, use our default.
+            $this->view->boxsize = $this->default_box_size;
+        }
+    }
+    public function determine_ignore_softstate()
+    {
+
+        # First determine if uri override is being passed
+        if (is_numeric($this->_getParam("ignore_softstate"))){
+            $this->view->ignore_softstate = $this->_getParam("ignore_softstate");
+
+        #Failing that, check to see if it's already in the configuration
+        }elseif ($this->config->get('settings','ignore_softstate','missing') !='missing'  ) {
+            # Note that $default_ignore_softstate should never be hit on this line.
+            $this->ignore_softstate = $this->config->get('settings','setting_ignore_softstate',$this->default_ignore_softstate);
+
+        #failing THAT, use our default.
+        }else{
+            $this->ignore_softstate = $this->default_ignore_softstate;
+        }
+
+    }
+    public function determine_requires_authentication()
+    {
+
+        #check to see if it's already in the configuration
+        if ($this->config->get('settings','requires_authentication',$this->requiresAuthentication) ) {
+            $this->requiresAuthentication = true;
+        }else{
+            $this->requiresAuthentication = false;
+
+
+        #failing THAT, the predefined system default is used.
+        }
+        $this->view->debug=$this->requiresAuthentication;
+        $this->view->debug="got this far". $this->requiresAuthentication;
     }
 
 
@@ -107,13 +154,15 @@ class BoxyDash_IndexController extends Controller
 
         foreach ($this->view->hosts as $host) {
             #FIXME: using Service function for a host state. that's kinda ugly.
-            #Loop through and make sure there's a field that says "OK" so we can grab the right css class
-            if ($host->{'host_hard_state'} ||  $this->config->get('settings','include_soft_status',false)){
-                $host->{'host_state_text'}=Service::getStateText($host->{'host_state'});
-            }else{
+
+            # if the host is in a soft state && we're ignoring soft state, say things are OK
+            if ( ! $host->{'host_hard_state'} && $this->ignore_softstate ){
                 $host->{'host_state_text'}=Service::getStateText(0);
+
+            #otherwise display as normal
+            }else{
+                $host->{'host_state_text'}=Service::getStateText($host->{'host_state'});
             }
-#            $host->{'host_name'}.= "(state: ".$host->{'host_hard_state'}.", status:".$this->config->get('settings','include_soft_status',false).")";
         }
 
     }
@@ -155,12 +204,12 @@ class BoxyDash_IndexController extends Controller
             $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
             $service->{'host_state_text'}=Service::getStateText($service->{'host_state'});
 
-#            $service->{'service_description'}.= "(state: ".$service->{'service_hard_state'}.", status:".$this->config->get('settings','include_soft_status',false).")";
-
-            if ( $service->{'service_hard_state'} || $service->{'service_state'} == 3 ||  $this->config->get('settings','include_soft_status',false)){
-                $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
-            }else{
+            # If we're not in a hard state AND the service state isn't unknown (it never goes past soft) AND we're ignoring softstate, then things are OK.
+            if ( !$service->{'service_hard_state'} && $service->{'service_state'} != 3 && $this->ignore_softstate ){
                 $service->{'service_state_text'}=Service::getStateText(0);
+            }else{
+                $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
+
             }
 
 
