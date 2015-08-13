@@ -20,40 +20,55 @@ use Icinga\Web\Url;
 #FIXME should this be Controller or ModuleActionController? The documentation was unclear.
 class BoxyDash_IndexController extends Controller
 {
-    protected $requiresAuthentication=false;
+    protected $requiresAuthentication = true;
     protected $default_ignore_softstate = false;
-    protected $default_box_size = 20;
+    protected $default_boxsize = 20;
+    protected $default_refresh = 10;
 
     public function indexAction()
     {
         $this->getTabs()->activate('dashboard');
         $this->config = $this->Config('config'); #? does this work?
 
-        $this->setAutorefreshInterval(10);
-
-        $this->determine_box_size();
-        $this->determine_ignore_softstate();
         $this->determine_requires_authentication();
+        $this->determine_refresh();
+        $this->determine_boxsize();
+        $this->determine_ignore_softstate();
 
         $this->_request->getParams();
-
 
         $this->getServiceData();
         $this->getHostData();
     }
 
-    public function determine_box_size()
+    public function determine_refresh()
+    {
+        if (intval($this->_getParam("refresh")) >=1){
+            $this->refresh = intval($this->_getParam("refresh"));
+
+        #Failing that, check to see if it's already in the configuration
+        }elseif (is_numeric( $this->config->get('settings','setting_refresh','missing'))) {
+            # Note that $default_refresh should never be hit on this line.
+            
+            $this->refresh = intval($this->config->get('settings','setting_refresh',$this->default_refresh));
+        }else{
+        #failing THAT, use our default.
+            $this->refresh =  $this->default_refresh ;
+        }
+        $this->setAutorefreshInterval( $this->refresh );
+    }
+    public function determine_boxsize()
     {
         if (is_numeric($this->_getParam("boxsize"))){
             $this->view->boxsize = $this->_getParam("boxsize");
 
         #Failing that, check to see if it's already in the configuration
         }elseif (is_numeric( $this->config->get('settings','setting_boxsize','missing'))) {
-            # Note that $default_box_size should never be hit on this line.
-            $this->view->boxsize = $this->config->get('settings','setting_boxsize',$this->default_box_size);
+            # Note that $default_boxsize should never be hit on this line.
+            $this->view->boxsize = $this->config->get('settings','setting_boxsize',$this->default_boxsize);
         }else{
         #failing THAT, use our default.
-            $this->view->boxsize = $this->default_box_size;
+            $this->view->boxsize = $this->default_boxsize;
         }
     }
     public function determine_ignore_softstate()
@@ -86,8 +101,7 @@ class BoxyDash_IndexController extends Controller
 
         #failing THAT, the predefined system default is used.
         }
-        $this->view->debug=$this->requiresAuthentication;
-        $this->view->debug="got this far". $this->requiresAuthentication;
+#        $this->view->debug=intval($this->requiresAuthentication);
     }
 
 
@@ -134,12 +148,8 @@ class BoxyDash_IndexController extends Controller
             'host_hard_state',
             'host_last_check',
             'host_notifications_enabled',
-            'host_unhandled_services',
             'host_action_url',
             'host_notes_url',
-            'host_last_comment',
-            'host_last_ack',
-            'host_last_downtime',
             'host_active_checks_enabled',
             'host_passive_checks_enabled',
             'host_current_check_attempt',
@@ -190,7 +200,6 @@ class BoxyDash_IndexController extends Controller
             'service_is_flapping',
             'service_state_type',
             'service_last_check',
-            'service_last_comment',
             'current_check_attempt' => 'service_current_check_attempt',
             'max_check_attempts'    => 'service_max_check_attempts'
         );

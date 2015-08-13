@@ -30,6 +30,26 @@ class SettingConfigForm extends ConfigForm
     {
         $this->addElement(
             'text',
+            'setting_refresh',
+            array(
+                'label'         => $this->translate('Dashboard Refresh'),
+                'description'   => $this->translate('How quickly the dashboard should refresh (between 1 second and 20 minutes)'),
+                'value'         => '10',
+                    'validators'    => array(
+                        array(
+                            'Between',
+                            false,
+                            array(
+                                'min'  => '1',
+                                'max'  => '1200',
+                                'inclusive' => true,
+                            )
+                        )
+                    )
+            )
+        );
+        $this->addElement(
+            'text',
             'setting_boxsize',
             array(
                 'label'         => $this->translate('Box Size'),
