@@ -16,11 +16,12 @@ use Icinga\Module\Monitoring\Controller;
 use Icinga\Module\Monitoring\Object\Host;
 use Icinga\Module\Monitoring\Object\Service;
 use Icinga\Web\Url;
+use Icinga\Application\Logger;
 
 #FIXME should this be Controller or ModuleActionController? The documentation was unclear.
 class BoxyDash_IndexController extends Controller
 {
-    protected $requiresAuthentication = true;
+    protected $default_requiresAuthentication = true;
     protected $default_ignore_softstate = false;
     protected $default_boxsize = 20;
     protected $default_refresh = 10;
@@ -28,18 +29,33 @@ class BoxyDash_IndexController extends Controller
     public function indexAction()
     {
         $this->getTabs()->activate('dashboard');
-        $this->config = $this->Config('config'); #? does this work?
+        $this->config = $this->Config('config');
 
-        $this->determine_requires_authentication();
         $this->determine_refresh();
         $this->determine_boxsize();
         $this->determine_ignore_softstate();
+
+
+        $isrequired = $this->config->get( 'settings', 'requires_authentication', $this->default_requiresAuthentication );
 
         $this->_request->getParams();
 
         $this->getServiceData();
         $this->getHostData();
     }
+
+    protected function requiresLogin()
+    {
+        #Logger::error("running requiresLogin");
+        $this->requiresAuthentication = (bool) $this->Config()->get(
+            'settings',
+            'requires_authentication',
+            $this->default_requiresAuthentication
+        );
+
+        return parent::requiresLogin();
+    }
+
 
     public function determine_refresh()
     {
@@ -88,20 +104,6 @@ class BoxyDash_IndexController extends Controller
             $this->ignore_softstate = $this->default_ignore_softstate;
         }
 
-    }
-    public function determine_requires_authentication()
-    {
-
-        #check to see if it's already in the configuration
-        if ($this->config->get('settings','requires_authentication',$this->requiresAuthentication) ) {
-            $this->requiresAuthentication = true;
-        }else{
-            $this->requiresAuthentication = false;
-
-
-        #failing THAT, the predefined system default is used.
-        }
-#        $this->view->debug=intval($this->requiresAuthentication);
     }
 
 
