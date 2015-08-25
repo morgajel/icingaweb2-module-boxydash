@@ -25,6 +25,7 @@ class BoxyDash_IndexController extends Controller
     protected $default_include_softstate = false;
     protected $default_boxsize = 20;
     protected $default_refresh = 10;
+    protected $default_showlegend = true;
 
     public function indexAction()
     {
@@ -32,6 +33,7 @@ class BoxyDash_IndexController extends Controller
         $this->config = $this->Config('config');
 
         $this->determine_refresh();
+        $this->determine_showlegend();
         $this->determine_boxsize();
         $this->determine_include_softstate();
 
@@ -56,6 +58,15 @@ class BoxyDash_IndexController extends Controller
         return parent::requiresLogin();
     }
 
+    public function determine_showlegend()
+    {
+        if ($this->_hasParam("showlegend")){
+            $this->view->showlegend = (boolean) $this->_getParam("showlegend");
+            #Failing that, check to see if it's already in the configuration or use the default legend
+        }else{
+            $this->view->showlegend = (boolean)  $this->config->get('settings','show_legend',$this->default_showlegend); 
+        }
+    }
 
     public function determine_refresh()
     {
@@ -72,10 +83,11 @@ class BoxyDash_IndexController extends Controller
         }
         $this->setAutorefreshInterval( $this->refresh );
     }
+
     public function determine_boxsize()
     {
         if (is_numeric($this->_getParam("boxsize"))){
-            $this->view->boxsize = $this->_getParam("boxsize");
+            $this->view->boxsize = intval($this->_getParam("boxsize"));
 
         #Failing that, check to see if it's already in the configuration
         }elseif (is_numeric( $this->config->get('settings','setting_boxsize','missing'))) {
@@ -164,16 +176,15 @@ class BoxyDash_IndexController extends Controller
         $this->view->hosts = $query->getQuery()->fetchAll();
 
         foreach ($this->view->hosts as $host) {
-            #FIXME: using Service function for a host state. that's kinda ugly.
+            #FIXME: using Service function for a host state. that's kinda ugly
 
-            # if the host is in a soft state && we're ignoring soft state, say things are OK
-            if ( ! $host->{'host_hard_state'} && $this->view->include_softstate ){
-                $host->{'host_state_text'}=Service::getStateText(0);
-
-            #otherwise display as normal
-            }else{
+            # If we allow statetypes, or it's ack'd OR the state type is already HARD
+            if ( $this->view->include_softstate or $host->{'host_acknowledged'}  ){
                 $host->{'host_state_text'}=Service::getStateText($host->{'host_state'});
+            }else{
+                $host->{'host_state_text'}=Service::getStateText($host->{'host_hard_state'});
             }
+
         }
 
     }
@@ -219,7 +230,6 @@ class BoxyDash_IndexController extends Controller
                 $service->{'service_state_text'}=Service::getStateText($service->{'service_state'});
             }else{
                 $service->{'service_state_text'}=Service::getStateText($service->{'service_hard_state'});
-
             }
 
 

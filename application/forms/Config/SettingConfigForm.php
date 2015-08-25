@@ -91,6 +91,16 @@ class SettingConfigForm extends ConfigForm
                 'description'   => $this->translate('Does Boxydash require Authentication? Warning, this may expose sensitive network information.')
             )
         );
+        $this->addElement(
+            'checkbox',
+            'show_legend',
+            array(
+                'required'      => true,
+                'value'         => true,
+                'label'         => $this->translate('Show the Legend'),
+                'description'   => $this->translate('Do you want to show the legend?')
+            )
+        );
 
     }
 

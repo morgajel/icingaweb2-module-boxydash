@@ -14,13 +14,13 @@ use Icinga\Module\Monitoring\Object\Host;
 
 <div class="content">
 
-
     <h1>Boxy Dashboard</h1>
+    <? if ($this->showlegend){ ?>
     <div class="boxy_legend">
         <span class="boxy_sublegend">
             <span class="legendtext">&#10004; = Acknowledged</span>
             <span class="legendtext">&#8986; = In Downtime</span>
-            <span class="legendtext">&#8632; = Host Issue Acknowledged</span>    
+            <span class="legendtext">&#8632; = Host Issue Acknowledged</span>
         </span>
         <span class="boxy_sublegend">
             <span class="legendtext">Status:</span>
@@ -36,9 +36,10 @@ use Icinga\Module\Monitoring\Object\Host;
             <span class="boxy_legend_box unknown-ack" >unknown</span>
         </span>
     </div>
+    <? } ?>
 <h2>Host Info</h2>
-<? 
-foreach ($this->hosts as $host){ 
+<?
+foreach ($this->hosts as $host){
     $title = htmlspecialchars($host->{'host_display_name'});
     $size=$this->boxsize;
     $content="&nbsp;";
@@ -54,7 +55,7 @@ foreach ($this->hosts as $host){
 <br clear="all"/>
 <h2>Service Info</h2>
 
-<? foreach ($this->services as $service){ 
+<? foreach ($this->services as $service){
     $service->{'service_hard_state'} = ($service->{'service_hard_state'}) ? "hard" : "soft";
     $title = $service->{'host_display_name'}.": ".$service->{'service_description'};
     #."(".$service->{'current_check_attempt'} .",".$service->{'max_check_attempts'} .")(". $service->{'service_hard_state'}.")";
