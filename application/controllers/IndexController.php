@@ -104,14 +104,10 @@ class BoxyDash_IndexController extends Controller
         # First determine if uri override is being passed
         if ( $this->_hasParam("include_softstate")){
             $this->view->include_softstate = (boolean) $this->_getParam("include_softstate");
-        #Failing that, check to see if it's already in the configuration
-        }elseif ($this->config->get('settings','include_softstate','missing') !='missing'  ) {
-            # Note that $default_include_softstate should never be hit on this line.
-            $this->view->include_softstate = $this->config->get('settings','setting_include_softstate',$this->default_include_softstate);
-
-        #failing THAT, use our default.
         }else{
-            $this->view->include_softstate = $this->default_include_softstate;
+            #Failing that, check to see if it's already in the configuration or use the default
+            $this->view->include_softstate = $this->config->get('settings','include_softstate',$this->default_include_softstate);
+            $this->view->debug=intval($this->view->include_softstate);
         }
 
 #        $this->view->debug= intval( (bool)$this->view->include_softstate);

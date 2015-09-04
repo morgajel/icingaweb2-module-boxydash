@@ -73,7 +73,7 @@ class SettingConfigForm extends ConfigForm
         );
         $this->addElement(
             'checkbox',
-            'include_soft_status',
+            'include_softstate',
             array(
                 'required'      => true,
                 'value'         => true,

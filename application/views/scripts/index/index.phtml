@@ -58,7 +58,7 @@ foreach ($this->hosts as $host){
 <? foreach ($this->services as $service){
     $service->{'service_hard_state'} = ($service->{'service_hard_state'}) ? "hard" : "soft";
     $title = $service->{'host_display_name'}.": ".$service->{'service_description'};
-    #."(".$service->{'current_check_attempt'} .",".$service->{'max_check_attempts'} .")(". $service->{'service_hard_state'}.")";
+    #."(".$service->{'current_check_attempt'} .",".$service->{'max_check_attempts'} .")(". $service->{'service_hard_state'}.")+acked:".$service->{'service_acknowledged'} ;
     $size=$this->boxsize;
     $content="&nbsp;";
     $returncode=$service->{'service_state_text'};
