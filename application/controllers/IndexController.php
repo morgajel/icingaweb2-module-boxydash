@@ -107,7 +107,7 @@ class BoxyDash_IndexController extends Controller
         }else{
             #Failing that, check to see if it's already in the configuration or use the default
             $this->view->include_softstate = $this->config->get('settings','include_softstate',$this->default_include_softstate);
-            $this->view->debug=intval($this->view->include_softstate);
+#            $this->view->debug=intval($this->view->include_softstate);
         }
 
 #        $this->view->debug= intval( (bool)$this->view->include_softstate);
