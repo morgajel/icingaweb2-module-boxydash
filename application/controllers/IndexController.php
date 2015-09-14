@@ -126,14 +126,16 @@ class BoxyDash_IndexController extends Controller
                 'tip'  => $this->translate('Overview')
             )
         );
-        $tabs->add(
-            'config',
-            array(
-                'title' => $this->translate('Configure'),
-                'url'   => 'boxydash/config',
-                'tip'  => $this->translate('Configure')
-            )
-        );
+	if($this->Auth()->isAuthenticated()){
+        	$tabs->add(
+        	    'config',
+        	    array(
+        	        'title' => $this->translate('Configure'),
+        	        'url'   => 'boxydash/config',
+        	        'tip'  => $this->translate('Configure')
+        	    )
+        	);
+	}
 
         return $tabs;
     }
