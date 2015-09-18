@@ -26,6 +26,7 @@ class BoxyDash_IndexController extends Controller
     protected $default_boxsize = 20;
     protected $default_refresh = 10;
     protected $default_showlegend = true;
+    protected $default_path_prefix = '';
 
     public function indexAction()
     {
@@ -35,6 +36,7 @@ class BoxyDash_IndexController extends Controller
         $this->determine_refresh();
         $this->determine_showlegend();
         $this->determine_boxsize();
+        $this->determine_path_prefix();
         $this->determine_include_softstate();
 
 
@@ -64,7 +66,7 @@ class BoxyDash_IndexController extends Controller
             $this->view->showlegend = (boolean) $this->_getParam("showlegend");
             #Failing that, check to see if it's already in the configuration or use the default legend
         }else{
-            $this->view->showlegend = (boolean)  $this->config->get('settings','show_legend',$this->default_showlegend); 
+            $this->view->showlegend = (boolean)  $this->config->get('settings','show_legend',$this->default_showlegend);
         }
     }
 
@@ -111,6 +113,11 @@ class BoxyDash_IndexController extends Controller
         }
 
 #        $this->view->debug= intval( (bool)$this->view->include_softstate);
+    }
+
+    public function determine_path_prefix()
+    {
+        $this->view->path_prefix = $this->config->get('settings', 'path_prefix', $this->default_path_prefix);
     }
 
 
