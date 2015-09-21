@@ -49,7 +49,7 @@ foreach ($this->hosts as $host){
         $content= "&#10004;";
         $title.=" (Acknowledged)";
     }?>
-    <a href='/monitoring/host/show?host=<?=$host->{'host_name'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
+    <a href='<?= $this->path_prefix ?>/monitoring/host/show?host=<?=$host->{'host_name'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
 <? } ?>
 
 <br clear="all"/>
@@ -76,7 +76,7 @@ foreach ($this->hosts as $host){
         $title.=" (Host Issue Acknowledged)";
     }
     $title=htmlspecialchars($title."\n ".$service->{'service_output'});?>
-    <a href='/monitoring/service/show?host=<?=$service->{'host_name'}?>&service=<?=$service->{'service_description'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
+    <a href='<?= $this->path_prefix ?>/monitoring/service/show?host=<?=$service->{'host_name'}?>&service=<?=$service->{'service_description'}?>' class='boxy_box state <?=$returncode?>' style='width:<?=$size?>px; height:<?=$size?>px; font-size:<?=$size?>px;' title="<?=$title?>"><?=$content?></a>
 
 <? } ?>
 <br clear=all>
