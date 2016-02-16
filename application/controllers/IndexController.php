@@ -175,6 +175,7 @@ class BoxyDash_IndexController extends Controller
 
         );
         $query = $this->backend->select()->from('hostStatus', $columns);
+        $this->applyRestriction('monitoring/filter/objects', $query); // follow filter object restrictions
         $query->order('host_name', 'desc');
 
         # This might be very very bad for very very large environments. I just don't know how well it'll perform.
@@ -221,6 +222,7 @@ class BoxyDash_IndexController extends Controller
             'max_check_attempts'    => 'service_max_check_attempts'
         );
         $query = $this->backend->select()->from('serviceStatus', $columns);
+        $this->applyRestriction('monitoring/filter/objects', $query); // follow filter object restrictions
         $query->order('host_name', 'desc');
 
         $this->view->services = $query->getQuery()->fetchAll();
