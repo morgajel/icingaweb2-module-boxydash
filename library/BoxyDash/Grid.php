@@ -24,4 +24,4 @@ class Grid extends WebBaseHook
         $this->baseUrl   = rtrim($cfg->get('base_url', $this->baseUrl), '/');
     }
 
-
+}
