@@ -11,3 +11,8 @@ $this->menuSection('Boxy Dashboard', array(
     'priority'  => 20
 ));
 
+$this->provideConfigTab('config', array(
+    'title' => $this->translate('Configure boxydash'),
+    'label' => $this->translate('config'),
+    'url' => 'config'
+));
