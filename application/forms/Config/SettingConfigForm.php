@@ -107,7 +107,7 @@ class SettingConfigForm extends ConfigForm
             array(
                 'label'         => $this->translate('URL path prefix'),
                 'description'   => $this->translate('Prefix prepended to all links, eg "/icingaweb2". Required in case Icinga Web 2 is installed in a subfolder (eg "http://your-domain.tld/icingaweb2").'),
-                'value'         => '',
+                'value'         => '/icingaweb2',
             )
         );
 
